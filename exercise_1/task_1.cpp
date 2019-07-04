@@ -1,16 +1,13 @@
 #include <iostream>
-#include <string>
 #include <cctype>
-
-using namespace std;
 
 int main()
 {
-	string words;	
+	std::string words;	
 	int vowels = 0, consonants = 0, others = 0;
 	
-	cout << "Enter words (q to quit)\n";
-	while ((cin >> words)&&(words != "q"))
+	std::cout << "Enter words (q to quit)"<<std::endl;
+	while ((std::cin >> words)&&(words != "q"))
 	{
 		if (isalpha(words[0]))
 		{
@@ -21,19 +18,21 @@ int main()
 			case 'o':
 			case 'u':
 			case 'y':
-				vowels++;
+				++vowels;
 				break;
 			default:
-				consonants++;
+				++consonants;
 				break;
 			}
 		}
 		else {
-			others++;
+			++others;
 		}
 	}
   
-	cout << vowels << " words beginning with vowel\n";
-	cout << consonants << " words beginning with consonant\n";
-	cout << others << " others";
+	std::cout << vowels << " words beginning with vowel"<<std::endl;
+	std::cout << consonants << " words beginning with consonant"<<std::endl;
+	std::cout << others << " others"<<std::endl;
+	
+	return EXIT_SUCCESS;
 }
