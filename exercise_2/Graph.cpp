@@ -1,77 +1,69 @@
 #include "Graph.h"
 #include <iostream>
+#include <vector>
+#include "WeightMatrix.h"
 
-Graph::Graph(int(&a)[N][N])
+Graph::Graph(const int& vertices, WeightMatrix& m)
 {
-	for (int i = 0; i < N; ++i)
+	this->vertices = vertices;
+	this->matrix = m;
+}
+
+Graph::~Graph() = default;
+
+int Graph::minIndex(std::vector<int>& v, std::vector<bool>& visited)
+{
+	int min = INT_MAX, min_index = 0;
+	for (int i = 0; i < vertices; ++i)
 	{
-		for (int j = 0; j < N; ++j)
+		if (visited[i] == false && v[i] <= min)
 		{
-			arr[i][j] = a[i][j];
+			min = v[i], min_index = i;
 		}
 	}
+	return min_index;
 }
 
-Graph::~Graph()
+void Graph:: setToDefaultValues(std::vector <int>& shortestPath, std::vector <bool>& visited)
 {
-}
-
-void  Graph::printGraph()
-{
-	for (int i = 0; i < N; ++i)
+	for (int i = 0; i < vertices; ++i)
 	{
-		for (int j = 0; j < N; ++j)
-		{
-			std::cout << arr[i][j] << " ";
-		}
-		std::cout << std::endl;
+		shortestPath.push_back(INT_MAX);
+		visited.push_back(false);
+	}
+}
+bool Graph::isPathToNextUnvisitedVertice(std::vector <bool>& visited, int& index, int& j)
+{
+	if ((!visited[j]) && (matrix.weightMatrix[index][j] != 0))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
-void Graph::printPath(int a[N], int start)
+std::vector <int>  Graph::findShortestPath(int start)
 {
-	for (int i = 0; i < N; i++)
+	std::vector <int> shortestPath;
+	std::vector <bool> visited;
+	setToDefaultValues(shortestPath, visited);
+	shortestPath[start] = 0;
+	for (int i = 0; i < vertices; ++i)
 	{
-		std::cout << "From " << start << " to " << i << "  " << a[i] << " " << std::endl;
-	}
-}
-
-void  Graph::findShortestPath(int start = 0)
-{
-	int path[N]{ 0 };
-	bool visited[N];
-
-	for (int i = 0; i < N; ++i)
-	{
-		path[i] = INT_MAX;
-		visited[i] = false;
-	}
-	path[start] = 0;
-	int index = -1;
-	for (int i = 0; i < N; ++i)
-	{
-		int min = INT_MAX;
-
-		for (int j = 0; j < N; ++j)
-		{
-			if (!visited[j] && path[j] <= min)
-			{
-				min = path[j];
-				index = j;
-			}
-		}
+		int index = minIndex(shortestPath, visited);
 		visited[index] = true;
-		for (int j = 0; j < N; ++j)
+		for (int j = 0; j < vertices; ++j)
 		{
-			if (!visited[j] && arr[index][j] > 1
-				&& path[index] != INT_MAX
-				&& path[index] + arr[index][j] < path[j])
+			if(isPathToNextUnvisitedVertice(visited, index, j))
 			{
-				path[j] = path[index] + arr[index][j];
+				if (shortestPath[index] + matrix.weightMatrix[index][j] < shortestPath[j])
+				{
+					shortestPath[j] = shortestPath[index] + matrix.weightMatrix[index][j];
+				}
 			}
 		}
 	}
-	printPath(path, start);
+	return shortestPath;
 }
-
-
