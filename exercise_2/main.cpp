@@ -4,7 +4,6 @@
 #include <vector>
 #include "Graph.h"
 #include "WeightMatrix.h"
-
 #include <ostream>
 
  int getNumberOfVertices(const std::string &argv )
@@ -51,7 +50,7 @@
 	 int start = 0;
 	 std::cout << "Please enter start vertice: from 0 to " << vertices - 1 << std::endl;
 	 std::cin >> start;
-	 if (start < 0 || start>7)
+	 if (start < 0 || start > 7)
 	 {
 		 std::cerr << "Entered digit is not in range 0 to 7";
 		 exit(1); 
