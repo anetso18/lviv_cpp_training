@@ -1,15 +1,24 @@
-#pragma once
+#include "WeightMatrix.h"
 #include <iostream>
-#include <vector>
-struct WeightMatrix
 
+WeightMatrix::WeightMatrix() {}
+
+WeightMatrix::WeightMatrix(const int& vertices)
 {
-public:
-	WeightMatrix();
-	WeightMatrix(const int& vertices);
-  ~WeightMatrix();
-  std::vector<std::vector<int>> weightMatrix;
-private:
-	friend std::ostream& operator<< (std::ostream& out, const WeightMatrix& m);
-};
- 
+	std::vector<std::vector<int>> matrix(vertices, std::vector<int>(vertices));
+	this->weightMatrix = matrix;
+}
+
+WeightMatrix::~WeightMatrix() = default;
+
+std::ostream& operator << (std::ostream& out, const WeightMatrix& m)
+{
+	 for (int i = 0; i< m.weightMatrix.size(); ++i) 
+	 {
+		 for (int j = 0; j < m.weightMatrix.size(); ++j){
+			 out << m.weightMatrix[i][j] << " ";
+		 }
+		 out << std::endl;
+	 }
+	return out;
+}
