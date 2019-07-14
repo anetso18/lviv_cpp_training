@@ -1,8 +1,8 @@
 #pragma once
 #include <iostream>
 #include <vector>
-struct WeightMatrix
 
+struct WeightMatrix
 {
 public:
 	WeightMatrix();
