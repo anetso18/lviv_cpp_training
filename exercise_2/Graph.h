@@ -1,16 +1,16 @@
-#pragma once	
-#include <iostream>
+#include <vector>
+#include "WeightMatrix.h"
 
 class Graph
 {
-private:
-	static int const N = 8;
-	int arr[N][N];
-	void printPath(int a[N], int start);
-
 public:
-	Graph(int(&a)[N][N]);
+	Graph(const int& vertices, WeightMatrix& m);
 	~Graph();
-	void printGraph();
-	void  findShortestPath(int start);
+	std::vector <int> findShortestPath(int start);
+private:	
+	int vertices;	
+	WeightMatrix matrix;
+	int minIndex(std::vector<int>& v, std::vector<bool>& visited);
+	void setToDefaultValues(std::vector <int>& shortestPath, std::vector <bool>& visited);
+	bool isPathToNextUnvisitedVertice(std::vector <bool>& visited, int& index, int& j);
 };
