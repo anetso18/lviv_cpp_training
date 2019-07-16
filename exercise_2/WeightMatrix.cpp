@@ -10,6 +10,11 @@ WeightMatrix::WeightMatrix(const int& vertices_)
 
 WeightMatrix::~WeightMatrix() = default;
 
+int WeightMatrix::GetVertices()
+{
+	return vertices;
+}
+
 int WeightMatrix::GetMatrixElement(int& start, int& end)
 {
 	return weightMatrix[start][end];
@@ -20,12 +25,12 @@ void WeightMatrix::SetMatrixElement(int& start, int& end, int& weight)
 	weightMatrix[start][end]=weight;
 }
 
-std::ostream& operator << (std::ostream& out, const WeightMatrix &matrix)
+std::ostream& operator<< (std::ostream& out,  WeightMatrix matrix)
 {
-	 for (int i = 0; i < matrix.vertices; ++i)
+	 for (int i = 0; i < matrix.GetVertices(); ++i)
 	 {
-		 for (int j = 0; j < matrix.vertices; ++j) {
-			out << matrix.weightMatrix[i][j] << " ";
+		 for (int j = 0; j < matrix.GetVertices(); ++j) {
+			 out << matrix.GetMatrixElement(i, j) << " ";
 		 }
 		 out<<std::endl;
 	 }
