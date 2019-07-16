@@ -3,28 +3,27 @@
 #include <vector>
 #include "WeightMatrix.h"
 
-Graph::Graph(const int& vertices, WeightMatrix& m)
+Graph::Graph(const int& vertices_, WeightMatrix& matrix_)
+	: vertices{vertices_}, matrix{matrix_}
 {
-	this->vertices = vertices;
-	this->matrix = m;
 }
 
 Graph::~Graph() = default;
 
-int Graph::minIndex(std::vector<int>& v, std::vector<bool>& visited)
+int Graph::getIndexofNearestUnvisitedVertice(std::vector<int>& shortestPath, std::vector<bool>& visited)
 {
 	int min = INT_MAX, min_index = 0;
 	for (int i = 0; i < vertices; ++i)
 	{
-		if (visited[i] == false && v[i] <= min)
+		if (!visited[i] && shortestPath[i] <= min)
 		{
-			min = v[i], min_index = i;
+			min = shortestPath[i], min_index = i;
 		}
 	}
 	return min_index;
 }
 
-void Graph:: setToDefaultValues(std::vector <int>& shortestPath, std::vector <bool>& visited)
+void Graph::setToDefaultValues(std::vector <int>& shortestPath, std::vector <bool>& visited)
 {
 	for (int i = 0; i < vertices; ++i)
 	{
@@ -32,38 +31,36 @@ void Graph:: setToDefaultValues(std::vector <int>& shortestPath, std::vector <bo
 		visited.push_back(false);
 	}
 }
+
 bool Graph::isPathToNextUnvisitedVertice(std::vector <bool>& visited, int& index, int& j)
 {
-	if ((!visited[j]) && (matrix.weightMatrix[index][j] != 0))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return (!visited[j] && matrix.GetMatrixElement(index,j) != 0);
 }
 
-std::vector <int>  Graph::findShortestPath(int start)
+std::vector <int> Graph::findShortestPath(int start)
 {
 	std::vector <int> shortestPath;
 	std::vector <bool> visited;
 	setToDefaultValues(shortestPath, visited);
+	
 	shortestPath[start] = 0;
 	for (int i = 0; i < vertices; ++i)
 	{
-		int index = minIndex(shortestPath, visited);
+		int index = getIndexofNearestUnvisitedVertice(shortestPath, visited);
 		visited[index] = true;
 		for (int j = 0; j < vertices; ++j)
 		{
 			if(isPathToNextUnvisitedVertice(visited, index, j))
 			{
-				if (shortestPath[index] + matrix.weightMatrix[index][j] < shortestPath[j])
+				if (shortestPath[index] + matrix.GetMatrixElement(index,j) < shortestPath[j])
 				{
-					shortestPath[j] = shortestPath[index] + matrix.weightMatrix[index][j];
+					shortestPath[j] = shortestPath[index] + matrix.GetMatrixElement(index,j);
 				}
 			}
 		}
 	}
 	return shortestPath;
 }
+
+
+

@@ -1,15 +1,18 @@
 #pragma once
 #include <iostream>
 #include <vector>
-
 struct WeightMatrix
 {
 public:
-	WeightMatrix();
-	WeightMatrix(const int& vertices);
+	
+	WeightMatrix(const int& vertices_);
 	~WeightMatrix();
-	std::vector<std::vector<int>> weightMatrix;
+	int GetMatrixElement(int& start, int& end);
+	void SetMatrixElement(int& start, int& end, int& weight);
+	
 private:
-	friend std::ostream& operator<< (std::ostream& out, const WeightMatrix& m);
+	int vertices;
+	std::vector<std::vector<int>> weightMatrix;
+	friend std::ostream& operator<< (std::ostream& out, const WeightMatrix& matrix);
 };
  
