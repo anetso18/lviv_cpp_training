@@ -1,35 +1,35 @@
 #include "WeightMatrix.h"
 #include <iostream>
 
-WeightMatrix::WeightMatrix(const int& vertices_)
-:vertices{vertices_}
+WeightMatrix::WeightMatrix( int verticiesCount)
+:verticiesCount{ verticiesCount }
 {
-	std::vector<std::vector<int>> matrix_(vertices_, std::vector<int>(vertices));
-	weightMatrix = matrix_;
+	std::vector<std::vector<int>> matrix(verticiesCount, std::vector<int>(verticiesCount));
+	weightMatrix = matrix;
 }
 
 WeightMatrix::~WeightMatrix() = default;
 
-int WeightMatrix::GetVertices()
+ int WeightMatrix::GetVerticesCount() const
 {
-	return vertices;
+	return verticiesCount;
 }
 
-int WeightMatrix::GetMatrixElement(int& start, int& end)
+int WeightMatrix::GetMatrixElement(int start, int end)const 
 {
 	return weightMatrix[start][end];
 }
 
-void WeightMatrix::SetMatrixElement(int& start, int& end, int& weight) 
+void WeightMatrix::SetMatrixElement(int start, int end, int weight)
 {
 	weightMatrix[start][end]=weight;
 }
 
-std::ostream& operator<< (std::ostream& out,  WeightMatrix matrix)
+std::ostream& operator << (std::ostream& out, const WeightMatrix& matrix)
 {
-	 for (int i = 0; i < matrix.GetVertices(); ++i)
+	 for (int i = 0; i < matrix.GetVerticesCount(); ++i)
 	 {
-		 for (int j = 0; j < matrix.GetVertices(); ++j) {
+		 for (int j = 0; j < matrix.GetVerticesCount(); ++j) {
 			 out << matrix.GetMatrixElement(i, j) << " ";
 		 }
 		 out<<std::endl;

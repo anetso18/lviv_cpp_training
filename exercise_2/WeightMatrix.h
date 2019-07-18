@@ -4,16 +4,15 @@
 struct WeightMatrix
 {
 public:
-	
-	WeightMatrix(const int& vertices_);
+	WeightMatrix(int verticiesCount);
 	~WeightMatrix();
-	int GetVertices();
-	int GetMatrixElement(int& start, int& end);
-	void SetMatrixElement(int& start, int& end, int& weight);
+	int GetVerticesCount()const;
+	int GetMatrixElement(int start, int end)const;
+	void SetMatrixElement(int start, int end, int weight);
 	
 private:
-	int vertices;
+	int verticiesCount;
 	std::vector<std::vector<int>> weightMatrix;
-	friend std::ostream& operator << (std::ostream& out,  WeightMatrix matrix);
+	friend std::ostream& operator << (std::ostream& out, const WeightMatrix& matrix);
 };
  

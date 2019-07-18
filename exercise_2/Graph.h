@@ -6,14 +6,13 @@
 class Graph
 {
 public:
-	Graph(const int& vertices_, WeightMatrix& matrix_);
+	Graph(int verticiesCount, WeightMatrix& matrix);
 	~Graph();
 	std::vector <int> findShortestPath(int start);
-
 private:	
-	int vertices;	
+	int verticiesCount;
 	WeightMatrix matrix;
-	int getIndexofNearestUnvisitedVertice(std::vector<int>& shortestPath, std::vector<bool>& visited);
+	int getIndexofNearestUnvisitedVertice(const std::vector<int>& shortestPath, const std::vector<bool>& visited);
 	void setToDefaultValues(std::vector <int>& shortestPath, std::vector <bool>& visited);
-	bool isPathToNextUnvisitedVertice(std::vector <bool>& visited, int& index, int& j);
+	bool isPathToNextUnvisitedVertice(const std::vector <bool>& visited, int index, int j);
 };
