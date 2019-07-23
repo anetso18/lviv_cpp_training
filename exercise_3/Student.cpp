@@ -21,7 +21,7 @@ std::string Student::getName() const
 std::string  Student::getFormatted() const
 {
 	std::ostringstream stream;
-	stream << this->getId() << "," << this->getName() << std::endl;
+	stream << getId() << "," << getName() << std::endl;
 
 	return stream.str();
 }

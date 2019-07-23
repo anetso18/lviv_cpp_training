@@ -15,7 +15,7 @@ Course::Course(int id, std::string name, int teacherId)
 std::string  Course::getFormatted() const  
 {
 	std::ostringstream stream;
-	stream << id << "," << name << "," << teacherId << std::endl;
+	stream << getId() << "," << name << "," << teacherId << std::endl;
 	
 	return stream.str();
 }
