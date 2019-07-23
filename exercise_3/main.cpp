@@ -1,5 +1,3 @@
-// ConsoleApplication5.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 #include <iostream>
 #include <vector>
 #include "IRecord.h"
@@ -12,43 +10,52 @@
 #include <sstream>
 #include <memory>
 
-static std::shared_ptr<IRecord> create(const char recordType, std::stringstream& stream) 
-{
-	int id;
-	std::string name;
-	int courseId;
-	int teacherId;
-	int studentId;
-	int result;
-	switch (recordType)
-	{
+
+	static std::shared_ptr<IRecord> create(const char recordType, std::stringstream& stream) {
+		int id;
+		std::string name;
+		int courseId;
+		int teacherId;
+		int studentId;
+		int result;
+		
+		switch (recordType) {
+						
 		case 'C':
 			stream >> id >> name >> teacherId;
-			return std::make_shared<Course>(id, name, teacherId); break;
+			return std::make_shared<Course>(id, name, teacherId);
+			break;
 		case 'E':
 			stream >> id >> courseId >> studentId >> result;
-			return std::make_shared<Exam>(id,courseId,studentId,result); break;
+			return std::make_shared<Exam>(id,courseId,studentId,result);
+			break;
 		case 'S':
 			stream >> id >> name;
-			return std::make_shared<Student>(id,name); break;
+			return std::make_shared<Student>(id,name);
+			break;
 		case 'T':
 			stream >> id >> name;
-			return std::make_shared<Teacher>(id,name); break;
+			return std::make_shared<Teacher>(id,name);
+			break;
 		default:
-			throw std::invalid_argument("Invalid record type"); break;
+			throw std::invalid_argument("Invalid record type");
+			break;
+		}
 	}
-}
+
 
 template<class T>
+
 void moveToContainer(std::shared_ptr<IRecord> record , std::vector<std::pair<int, std::shared_ptr<IRecord>>> &container)
 {
 	container.emplace_back(record->getId(),std::move(record));
 }
 
+
 void loadObjectsFromFile(const std::string& argv, std::vector<std::pair<int, std::shared_ptr<IRecord>>> &exams,
-			 std::vector<std::pair<int, std::shared_ptr<IRecord>>> &courses,
-	                 std::vector<std::pair<int, std::shared_ptr<IRecord>>> &teachers,
-                         std::vector<std::pair<int, std::shared_ptr<IRecord>>> &students)
+	                                              std::vector<std::pair<int, std::shared_ptr<IRecord>>> &courses,
+	                                              std::vector<std::pair<int, std::shared_ptr<IRecord>>> &teachers,
+                                                  std::vector<std::pair<int, std::shared_ptr<IRecord>>> &students)
 {
 	std::ifstream in(argv);
 	if (in.is_open())
@@ -81,7 +88,7 @@ void loadObjectsFromFile(const std::string& argv, std::vector<std::pair<int, std
 				break;
 			default:
 				throw std::invalid_argument("Invalid record type");
-			}
+            }
 		}
 	}
 	else
@@ -91,12 +98,14 @@ void loadObjectsFromFile(const std::string& argv, std::vector<std::pair<int, std
 	}
 }
 
+template<class T>
 
 void writeObjectsToFile( std::string fileName, std::vector<std::pair<int, std::shared_ptr<IRecord>>>& container)
 {
 	std::ofstream output(fileName);
 	if (output)
 	{
+		sort(container.begin(), container.end());
 		for (auto &record: container) 
 		{
 			output <<record.second->getFormatted()<<std::endl;
@@ -106,6 +115,7 @@ void writeObjectsToFile( std::string fileName, std::vector<std::pair<int, std::s
 	{
 		std::cerr << "Unable to create file." << std::endl;
 	}
+
 }
 
 
@@ -118,8 +128,10 @@ int main(int argc, char* argv[])
 
 	loadObjectsFromFile(argv[1],exams, courses, teachers,students);
 		
-	writeObjectsToFile("./Exams.txt", exams);
-	writeObjectsToFile("./Cources.txt", courses);
-	writeObjectsToFile("./Students.txt", students);
-	writeObjectsToFile("./Teachers.txt", teachers);
+	writeObjectsToFile<Exam>("./Exams.txt", exams);
+	writeObjectsToFile<Course>("./Cources.txt", courses);
+	writeObjectsToFile<Student>("./Students.txt", students);
+	writeObjectsToFile<Teacher>("./Teachers.txt", teachers);
+	
+	return EXIT_SUCCESS;
 }
