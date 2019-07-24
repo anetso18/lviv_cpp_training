@@ -70,7 +70,6 @@ LoadingResult loadObjectsFromFile(const std::string& argv,
 		{
 			std::replace(line.begin(), line.end(), ',', separator);
 			std::stringstream stream(line);
-			std::getline(stream, substr, separator);
 			stream >> substr;
 			std::unique_ptr<IRecord> record= std::move(create(line[0], stream));
 			switch(line[0])
@@ -88,37 +87,22 @@ LoadingResult loadObjectsFromFile(const std::string& argv,
 				moveToContainer(std::move(record), students); break;
 			return	LoadingResult::Ok;
 			default:
-				std::cerr << "Unknown record type" << std::endl;
 				return LoadingResult::UnknownRecordType;
             }
 		}
 	}
 	else
 	{
-		std::cerr << "File not found" << std::endl;
 		return LoadingResult::FileNotFound;
 	}
 }
-
-bool compareRecordsById(const std::unique_ptr<IRecord>& a, const std::unique_ptr<IRecord>& b)
-{
-	return a->getId() < b->getId();
-}
-
-struct compareRecords
-{
-	inline bool operator()(const std::unique_ptr<IRecord>& a, const std::unique_ptr<IRecord>& b)
-	{
-		return a->getId() < b->getId();
-	}
-};
 
 void writeObjectsToFile( std::string fileName, std::vector< std::unique_ptr<IRecord>>& container)
 {
 	std::ofstream output(fileName);
 	if (output)
 	{
-		sort(container.begin(), container.end(), compareRecords());
+		sort(container.begin(), container.end(), [](const auto& lhs, const auto& rhs) { return lhs->getId() < rhs->getId();} );
 		for (const auto& record: container) 
 		{
 			output << record->getFormatted()<< std::endl;
@@ -128,7 +112,6 @@ void writeObjectsToFile( std::string fileName, std::vector< std::unique_ptr<IRec
 	{
 		std::cerr << "Unable to create file." << std::endl;
 	}
-
 }
 
 int main(int argc, char* argv[])
@@ -137,9 +120,20 @@ int main(int argc, char* argv[])
 	std::vector< std::unique_ptr<IRecord>> courses;
 	std::vector< std::unique_ptr<IRecord>> teachers;
 	std::vector< std::unique_ptr<IRecord>> students;
-
-	loadObjectsFromFile(argv[1],exams, courses, teachers,students);
 		
+	const auto result = loadObjectsFromFile(argv[1], exams, courses, teachers, students);
+	
+	if(result == LoadingResult::FileNotFound)
+	{
+		std::cerr << "File not found" << std::endl;
+		return EXIT_FAILURE;
+	}
+	else if (result == LoadingResult::UnknownRecordType)
+	{
+		std::cerr << "File not found" << std::endl;
+		return EXIT_FAILURE;
+	}
+
 	writeObjectsToFile("./Exams.txt", exams);
 	writeObjectsToFile("./Cources.txt", courses);
 	writeObjectsToFile("./Students.txt", students);
