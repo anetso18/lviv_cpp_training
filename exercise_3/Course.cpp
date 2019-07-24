@@ -8,7 +8,7 @@ int Course::getId() const
 }
 
 Course::Course(int id, std::string name, int teacherId)
-	:id( id ), name{ name }, teacherId{ teacherId }
+	:id{ id }, name{ name }, teacherId{ teacherId }
 {
 }
 

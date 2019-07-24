@@ -10,8 +10,7 @@
 #include <sstream>
 #include <memory>
 
-
-	static std::shared_ptr<IRecord> create(const char recordType, std::stringstream& stream) {
+	static std::unique_ptr<IRecord> create(const char recordType, std::stringstream& stream) {
 		int id;
 		std::string name;
 		int courseId;
@@ -23,39 +22,42 @@
 						
 		case 'C':
 			stream >> id >> name >> teacherId;
-			return std::make_shared<Course>(id, name, teacherId);
+			return std::make_unique<Course>(id, name, teacherId);
 			break;
 		case 'E':
 			stream >> id >> courseId >> studentId >> result;
-			return std::make_shared<Exam>(id,courseId,studentId,result);
+			return std::make_unique<Exam>(id,courseId,studentId,result);
 			break;
 		case 'S':
 			stream >> id >> name;
-			return std::make_shared<Student>(id,name);
+			return std::make_unique<Student>(id,name);
 			break;
 		case 'T':
 			stream >> id >> name;
-			return std::make_shared<Teacher>(id,name);
+			return std::make_unique<Teacher>(id,name);
 			break;
 		default:
-			throw std::invalid_argument("Invalid record type");
+			throw std::invalid_argument("UnknownRecordType");
 			break;
 		}
 	}
 
-
-template<class T>
-
-void moveToContainer(std::shared_ptr<IRecord> record , std::vector<std::pair<int, std::shared_ptr<IRecord>>> &container)
+void moveToContainer( std::unique_ptr<IRecord> &&record , std::vector< std::unique_ptr<IRecord>> &container)
 {
-	container.emplace_back(record->getId(),std::move(record));
+	container.emplace_back(std::move(record));
 }
 
+enum class LoadingResult {
+	Ok,
+	FileNotFound,
+	UnknownRecordType
+};
 
-void loadObjectsFromFile(const std::string& argv, std::vector<std::pair<int, std::shared_ptr<IRecord>>> &exams,
-	                                              std::vector<std::pair<int, std::shared_ptr<IRecord>>> &courses,
-	                                              std::vector<std::pair<int, std::shared_ptr<IRecord>>> &teachers,
-                                                  std::vector<std::pair<int, std::shared_ptr<IRecord>>> &students)
+LoadingResult loadObjectsFromFile(const std::string& argv,
+	                     std::vector< std::unique_ptr<IRecord>>& exams,
+	                     std::vector< std::unique_ptr<IRecord>>& courses,
+	                     std::vector< std::unique_ptr<IRecord>>& teachers,
+	                     std::vector< std::unique_ptr<IRecord>>& students)
 {
 	std::ifstream in(argv);
 	if (in.is_open())
@@ -69,46 +71,57 @@ void loadObjectsFromFile(const std::string& argv, std::vector<std::pair<int, std
 			std::replace(line.begin(), line.end(), ',', separator);
 			std::stringstream stream(line);
 			std::getline(stream, substr, separator);
-
-			std::shared_ptr<IRecord> record = create(line[0], stream);
-
+			stream >> substr;
+			std::unique_ptr<IRecord> record= std::move(create(line[0], stream));
 			switch(line[0])
 			{
 			case 'E':
-				moveToContainer<Exam>(record, exams);	
-				break;
+				moveToContainer(std::move(record), exams); break;
+				return	LoadingResult::Ok;
 			case 'C':
-				moveToContainer<Course>(record, courses);
-				break;
+				moveToContainer(std::move(record), courses); break;
+				return	LoadingResult::Ok;
 			case 'T':
-				moveToContainer<Teacher>(record, teachers);
-				break;
+				moveToContainer(std::move(record), teachers); break;
+				return	LoadingResult::Ok;
 			case 'S':
-				moveToContainer<Student>(record, students);
-				break;
+				moveToContainer(std::move(record), students); break;
+			return	LoadingResult::Ok;
 			default:
-				throw std::invalid_argument("Invalid record type");
+				std::cerr << "Unknown record type" << std::endl;
+				return LoadingResult::UnknownRecordType;
             }
 		}
 	}
 	else
 	{
-		std::cerr << "Unable to open file";
-		exit(1);
+		std::cerr << "File not found" << std::endl;
+		return LoadingResult::FileNotFound;
 	}
 }
 
-template<class T>
+bool compareRecordsById(const std::unique_ptr<IRecord>& a, const std::unique_ptr<IRecord>& b)
+{
+	return a->getId() < b->getId();
+}
 
-void writeObjectsToFile( std::string fileName, std::vector<std::pair<int, std::shared_ptr<IRecord>>>& container)
+struct compareRecords
+{
+	inline bool operator()(const std::unique_ptr<IRecord>& a, const std::unique_ptr<IRecord>& b)
+	{
+		return a->getId() < b->getId();
+	}
+};
+
+void writeObjectsToFile( std::string fileName, std::vector< std::unique_ptr<IRecord>>& container)
 {
 	std::ofstream output(fileName);
 	if (output)
 	{
-		sort(container.begin(), container.end());
-		for (auto &record: container) 
+		sort(container.begin(), container.end(), compareRecords());
+		for (const auto& record: container) 
 		{
-			output <<record.second->getFormatted()<<std::endl;
+			output << record->getFormatted()<< std::endl;
 		}
 	}
 	else 
@@ -118,20 +131,19 @@ void writeObjectsToFile( std::string fileName, std::vector<std::pair<int, std::s
 
 }
 
-
 int main(int argc, char* argv[])
 {
-	std::vector<std::pair<int, std::shared_ptr<IRecord>>> exams;
-	std::vector<std::pair<int, std::shared_ptr<IRecord>>> courses;
-	std::vector<std::pair<int, std::shared_ptr<IRecord>>> teachers;
-	std::vector<std::pair<int, std::shared_ptr<IRecord>>> students;
+	std::vector< std::unique_ptr<IRecord>> exams;
+	std::vector< std::unique_ptr<IRecord>> courses;
+	std::vector< std::unique_ptr<IRecord>> teachers;
+	std::vector< std::unique_ptr<IRecord>> students;
 
 	loadObjectsFromFile(argv[1],exams, courses, teachers,students);
 		
-	writeObjectsToFile<Exam>("./Exams.txt", exams);
-	writeObjectsToFile<Course>("./Cources.txt", courses);
-	writeObjectsToFile<Student>("./Students.txt", students);
-	writeObjectsToFile<Teacher>("./Teachers.txt", teachers);
+	writeObjectsToFile("./Exams.txt", exams);
+	writeObjectsToFile("./Cources.txt", courses);
+	writeObjectsToFile("./Students.txt", students);
+	writeObjectsToFile("./Teachers.txt", teachers);
 	
 	return EXIT_SUCCESS;
 }

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <sstream>
 
-Exam::Exam(int id, int courseId, int studentId, int result) : id( id ), courseId{ courseId },
+Exam::Exam(int id, int courseId, int studentId, int result) : id{ id }, courseId{ courseId },
 studentId{ studentId },result{ result } 
 { 
 }

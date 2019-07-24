@@ -4,7 +4,7 @@
 #include <memory>
 
 Student::Student(int id, std::string name)
-	:id( id ), name{ std::move( name ) }
+	:id{ id }, name{ std::move(name) }
 {
 }
 
