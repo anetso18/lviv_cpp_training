@@ -5,6 +5,7 @@
 #include <thread>
 
 #include "worm.h"
+#include "MapperWrapper.h"
 
 enum WormType {
   Lazy, Hunter
@@ -13,7 +14,8 @@ enum WormType {
 class Board {
  protected:
   std::vector<std::vector<int>> board_;
-  std::unordered_map<int, std::thread> worms_;
+  //std::unordered_map<int, std::thread> worms_;
+  MapperWrapper<int, std::thread> worms_;
   std::unordered_map<int, WormType> wormTypes_;
   std::unordered_set<int> killed_;
   int nextId_;
@@ -21,7 +23,12 @@ class Board {
 
  public:
   Board(int width, int height);
-  virtual ~Board() { }
+
+  std::unordered_map<int, std::thread> getWorms()
+  {
+      return std::move (worms_.mapper);
+  }
+  virtual ~Board();
   virtual void addWorm(WormType type, int x, int y);
   virtual int getWidth() const { return board_[0].size(); }
   virtual int getHeight() const { return board_.size(); }

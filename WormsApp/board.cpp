@@ -1,20 +1,43 @@
 #include "board.h"
+#include <iostream>
+#include <thread>
+#include <unordered_map>
 
 
 Board::Board(int width, int height) : nextId_{1}, killAll_{false} {
-  board_.resize(height);
-  for (int i = 0; i < (int)board_.size(); ++i)
+    if (width <= 0 || height <= 0)
+        throw std::invalid_argument("Width and Height parameters should be grater than 0.");
+    board_.resize(height);
+    for (int i = 0; i < (int)board_.size(); ++i)
     board_[i].resize(width);
 }
 
+Board::~Board() {
+ for(auto& w: getWorms()){
+     w.second.join();}
+ }
+
 void Board::addWorm(WormType type, int x, int y) {
-  // TODO: Implement the body of the function. It should add a worm
+  // TODO:   the body of the function. It should add a worm
   // into the board_ and start a new thread which will invoke
   // call operator - operator()(int) - defined in Worm class.
   // Note: there are a few class members (like wormTypes_) that need to be
   // updated as well to have full information about the worm that is being
   // added. They are usually based on worm's id which should be uniquely given
   // here.
+    board_[x][y] = nextId_;
+    if (type == Lazy)
+    {
+        LazyWorm w = LazyWorm(x,y,this);
+        worms_.add(nextId_,std::thread(std::move(w),nextId_));
+    }
+    else
+    {
+        HunterWorm w = HunterWorm(x,y,this);
+        worms_.add(nextId_,std::thread(std::move(w),nextId_));
+    }
+    wormTypes_[nextId_] = type;
+    nextId_++;
 }
 
 void Board::update(int id, int oldX, int oldY, int newX, int newY) {
@@ -39,3 +62,5 @@ void Board::clearDead() {
       if (killed_.find(board_[i][j]) != killed_.end())
         board_[i][j] = 0;
 }
+
+
