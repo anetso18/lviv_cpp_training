@@ -3,9 +3,9 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <thread>
-
 #include "worm.h"
 #include "MapperWrapper.h"
+#include <mutex>
 
 enum WormType {
   Lazy, Hunter
@@ -20,8 +20,10 @@ class Board {
   std::unordered_set<int> killed_;
   int nextId_;
   bool killAll_;
+  std::mutex mut;
 
- public:
+
+public:
   Board(int width, int height);
 
   std::unordered_map<int, std::thread> getWorms()

@@ -19,7 +19,7 @@ std::mutex mut;
 
 void Worm::move() {
 
-  std::lock_guard< std::mutex > lk( mut );
+
   int oldX = x_, oldY = y_;
 
    //TODO: Implement the body of the function. It should perform one step
@@ -42,11 +42,8 @@ break;
   case DOWN:
        (y_>0)?--y_:y_%=board_->getHeight();
       break;
-
   }
-
   board_->update(id_,oldX,oldY,x_,y_);
-
 }
 
 void LazyWorm::run() {
@@ -69,11 +66,7 @@ void LazyWorm::run() {
       (int)currDir_--;
       if (currDir_ < 0) currDir_ += 4;
     }
-    if (board_->checkKill(id_)) {
-      alive = false;
-      break;
-    }
-    this->move();
+     this->move();
   }
 }
 
@@ -117,11 +110,6 @@ void HunterWorm::run() {
 
     if(!dirs.empty())
       currDir_ = dirs[rand() % dirs.size()];
-
-    if (board_->checkKill(id_)) {
-      alive = false;
-      break;
-    }
     this->move();
   }
   std::cout << "Id " << id_ << " has died\n";

@@ -5,6 +5,7 @@
 
 
 Board::Board(int width, int height) : nextId_{1}, killAll_{false} {
+
     if (width <= 0 || height <= 0)
         throw std::invalid_argument("Width and Height parameters should be grater than 0.");
     board_.resize(height);
@@ -17,6 +18,7 @@ Board::~Board() {
      w.second.join();}
  }
 
+
 void Board::addWorm(WormType type, int x, int y) {
   // TODO:   the body of the function. It should add a worm
   // into the board_ and start a new thread which will invoke
@@ -25,7 +27,7 @@ void Board::addWorm(WormType type, int x, int y) {
   // updated as well to have full information about the worm that is being
   // added. They are usually based on worm's id which should be uniquely given
   // here.
-    board_[x][y] = nextId_;
+     board_[x][y] = nextId_;
     if (type == Lazy)
     {
         LazyWorm w = LazyWorm(x,y,this);
@@ -41,9 +43,12 @@ void Board::addWorm(WormType type, int x, int y) {
 }
 
 void Board::update(int id, int oldX, int oldY, int newX, int newY) {
+  std::lock_guard<std::mutex> lock(mut);
+  if(checkKill(id))
+       return;
   int targetId = board_[newX][newY];
   if (targetId != 0 && targetId != id)
-    killed_.insert(targetId);
+  killed_.insert(targetId);
   board_[oldX][oldY] = 0;
   board_[newX][newY] = id;
 }
