@@ -15,8 +15,6 @@ using std::unordered_set;
 using std::hash;
 using std::vector;
 
-std::mutex mut;
-
 void Worm::move() {
 
 
@@ -28,8 +26,12 @@ void Worm::move() {
   switch (currDir_)
   {
   case LEFT:
-      (x_>0)?--x_:x_%=board_->getWidth();
+      if(x_>0)
+          --x_;
+      else
+          x_%=board_->getWidth();
       break;
+
   case RIGHT:
       ++x_;
       x_%= board_->getWidth();
@@ -38,9 +40,13 @@ void Worm::move() {
   case UP:
       ++y_;
       y_%= board_->getHeight();
-break;
+      break;
+
   case DOWN:
-       (y_>0)?--y_:y_%=board_->getHeight();
+       if(y_>0)
+           --y_;
+       else
+           y_%=board_->getHeight();
       break;
   }
   board_->update(id_,oldX,oldY,x_,y_);

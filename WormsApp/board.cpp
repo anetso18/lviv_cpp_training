@@ -3,7 +3,6 @@
 #include <thread>
 #include <unordered_map>
 
-
 Board::Board(int width, int height) : nextId_{1}, killAll_{false} {
 
     if (width <= 0 || height <= 0)
@@ -14,13 +13,13 @@ Board::Board(int width, int height) : nextId_{1}, killAll_{false} {
 }
 
 Board::~Board() {
- for(auto& w: getWorms()){
-     w.second.join();}
- }
-
+    for(auto& m: std::move(worms_.getMapper())){
+     m.second.join();
+    }
+   }
 
 void Board::addWorm(WormType type, int x, int y) {
-  // TODO:   the body of the function. It should add a worm
+  // TODO: Implement the body of the function. It should add a worm
   // into the board_ and start a new thread which will invoke
   // call operator - operator()(int) - defined in Worm class.
   // Note: there are a few class members (like wormTypes_) that need to be

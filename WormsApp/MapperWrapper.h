@@ -1,18 +1,22 @@
-#ifndef MAPPERWRAPPER_H
-#define MAPPERWRAPPER_H
+#pragma once
 
 #include <unordered_map>
 #include <utility>
 #include<thread>
 
-template <typename KeyType, typename valueType> class MapperWrapper
+template <typename keyType, typename valueType>
+class MapperWrapper
 {
-    public:
-        void add(KeyType key, valueType&& value)
-        {
-        mapper.emplace(key, std::forward<std::thread>(value));
-        }
+public:
+    void add(keyType key, valueType&& value)
+    {
+        mapper.emplace(key, std::forward<valueType>(value));
+    }
 
-        std::unordered_map<KeyType, valueType> mapper;
+      std::unordered_map<keyType, valueType>&  getMapper(){
+        return  mapper;
+    }
+
+private:
+      std::unordered_map<keyType, valueType> mapper;
 };
-#endif
