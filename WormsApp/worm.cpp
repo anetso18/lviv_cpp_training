@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <iostream>
+#include "MapperWrapper.h"
 
 using std::pair;
 using std::make_pair;
@@ -15,11 +16,39 @@ using std::hash;
 using std::vector;
 
 void Worm::move() {
+
+
   int oldX = x_, oldY = y_;
 
-  // TODO: Implement the body of the function. It should perform one step
-  // based on currDir_ and modify class variables x_ and y_.
+   //TODO: Implement the body of the function. It should perform one step
+   //based on currDir_ and modify class variables x_ and y_.
 
+  switch (currDir_)
+  {
+  case LEFT:
+      if(x_>0)
+          --x_;
+      else
+          x_%=board_->getWidth();
+      break;
+
+  case RIGHT:
+      ++x_;
+      x_%= board_->getWidth();
+      break;
+
+  case UP:
+      ++y_;
+      y_%= board_->getHeight();
+      break;
+
+  case DOWN:
+       if(y_>0)
+           --y_;
+       else
+           y_%=board_->getHeight();
+      break;
+  }
   board_->update(id_,oldX,oldY,x_,y_);
 }
 
@@ -43,7 +72,7 @@ void LazyWorm::run() {
       (int)currDir_--;
       if (currDir_ < 0) currDir_ += 4;
     }
-    this->move();
+     this->move();
   }
 }
 
