@@ -47,7 +47,7 @@ void Board::update(int id, int oldX, int oldY, int newX, int newY) {
        return;
   int targetId = board_[newX][newY];
   if (targetId != 0 && targetId != id)
-  killed_.insert(targetId);
+   killed_.insert(targetId);
   board_[oldX][oldY] = 0;
   board_[newX][newY] = id;
 }
